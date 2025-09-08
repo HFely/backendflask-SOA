@@ -1,0 +1,29 @@
+# Entorno virtual
+venv/
+env/
+
+# Instancia de Flask
+instance/
+
+# Migraciones de base de datos (opcional, si no quieres versionarlas)
+migrations/
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Base de datos SQLite (si usas SQLite para desarrollo)
+*.db
+*.sqlite3
