@@ -2,9 +2,9 @@ import jwt
 from datetime import datetime, timedelta
 from flask import current_app
 
-def generate_token(user_id):
+def generate_token(id_user):
     payload = {
-        "user_id": user_id,
+        "id_user": id_user,
         "exp": datetime.utcnow() + timedelta(seconds=current_app.config['JWT_ACCESS_TOKEN_EXPIRES']),
         "iat": datetime.utcnow()
     }

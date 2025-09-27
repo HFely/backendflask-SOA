@@ -1,123 +1,142 @@
-Backend Flask - Proyecto Base
+# 🚀 Backend Flask - Proyecto Base
 
-Este proyecto implementa una plantilla base de backend con Flask, orientada a servicios RESTful.
-Se utiliza PostgreSQL como base de datos, junto con SQLAlchemy y Flask-Migrate para la gestión de modelos y migraciones. La autenticación se maneja mediante JWT (JSON Web Tokens).
+![Python](https://img.shields.io/badge/python-3.12+-blue?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-microframework-black?logo=flask)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-database-336791?logo=postgresql&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-🛠️ Tecnologías utilizadas
+Plantilla base de **backend REST** con **Flask**, **PostgreSQL**, **SQLAlchemy/Flask-Migrate** y **JWT** para autenticación.
 
-Python 3.12+
+---
 
-Flask (micro-framework web)
+## 📑 Contenidos
+- [🛠️ Tecnologías](#️-tecnologías)
+- [⚠️ Observaciones](#️-observaciones)
+- [📦 Instalación](#-instalación)
+- [📄 Variables de entorno (.env)](#-variables-de-entorno-env)
+- [🗄️ Migraciones de base de datos](#️-migraciones-de-base-de-datos)
+- [▶️ Ejecutar el servidor](#️-ejecutar-el-servidor)
+- [📡 Endpoints principales](#-endpoints-principales)
+- [🔑 Seguridad con JWT](#-seguridad-con-jwt)
+- [📂 Estructura del proyecto](#-estructura-del-proyecto)
+- [✅ Recomendaciones](#-recomendaciones)
 
-Flask-SQLAlchemy (ORM para la base de datos)
+---
 
-Flask-Migrate (migraciones con Alembic)
+## 🛠️ Tecnologías
+- **Python 3.12+**
+- **Flask**
+- **Flask-SQLAlchemy**
+- **Flask-Migrate** (Alembic)
+- **Flask-JWT-Extended / PyJWT**
+- **PostgreSQL**
+- **psycopg2 / psycopg2-binary**
+- **python-dotenv**
 
-Flask-JWT-Extended (autenticación con JWT)
+---
 
-PostgreSQL (motor de base de datos relacional)
+## ⚠️ Observaciones
+- En **Windows**, para compilar/instalar `psycopg2` puede requerirse **Microsoft C++ Build Tools** (o un compilador C instalado).
+- Proyecto orientado a **API REST (servicios)**. Aunque la estructura soporta templates, **no** se recomienda usarla para frontend aquí.
+- Asegura un `.env` correcto para claves y conexión a BD.
 
-psycopg2 (conector de Python para PostgreSQL)
+---
 
-python-dotenv (manejo de variables de entorno)
+## 📦 Instalación
+```bash
+# 1) Clonar
+git clone https://github.com/tu-usuario/tu-repo.git
+cd tu-repo
 
-⚠️ Observaciones importantes
-
-Para que psycopg2 funcione en Windows, es necesario tener instalado Microsoft C++ Build Tools o un compilador C disponible en el sistema.
-
-El proyecto está orientado únicamente a servicios (API REST). Aunque la estructura podría extenderse para usar templates y renderizar vistas en frontend, no se recomienda para este caso.
-
-La seguridad depende de configurar adecuadamente las variables de entorno en el archivo .env.
-
-🚀 Instrucciones de instalación
-1. Clonar el repositorio
-git clone <url-del-repo>
-cd BackendFlask
-
-2. Crear entorno virtual
+# 2) Entorno virtual
 python -m venv venv
 
-
-Activar el entorno virtual:
-
-Windows:
-
+# 3) Activar entorno
+# Windows
 venv\Scripts\activate
-
-
-Linux/Mac:
-
+# Linux/Mac
 source venv/bin/activate
 
-3. Instalar dependencias
+# 4) Dependencias
 pip install -r requirements.txt
 
-4. Crear archivo .env
+```
+## 📄 Variables de entorno (.env)
 
-En la raíz del proyecto, crea un archivo .env con las siguientes variables:
+- Crea un archivo .env en la raíz con:
 
-SECRET_KEY=tu_clave_secreta
-JWT_SECRET_KEY=tu_clave_jwt
-DEV_DATABASE_URL=postgresql://usuario:password@localhost/nombre_bd_dev
-TEST_DATABASE_URL=postgresql://usuario:password@localhost/nombre_bd_test
-DATABASE_URL=postgresql://usuario:password@localhost/nombre_bd_prod
+- **SECRET_KEY=tu_clave_secreta**
+- **JWT_SECRET_KEY=tu_clave_jwt**
 
+- **DEV_DATABASE_URL=postgresql://usuario:password@localhost/nombre_bd_dev**
+- **TEST_DATABASE_URL=postgresql://usuario:password@localhost/nombre_bd_test**
+- **DATABASE_URL=postgresql://usuario:password@localhost/nombre_bd_prod**
 
-⚠️ Reemplazar usuario, password y nombre_bd_* con tus datos reales de PostgreSQL.
+⚠️ Reemplaza usuario, password y nombre_bd_* por tus valores reales de PostgreSQL.
 
-5. Inicializar base de datos
+---
+
+## 🗄️ Migraciones de base de datos
+```bash
 flask db init
 flask db migrate -m "Initial migration"
 flask db upgrade
+flask init-data
+```
+---
 
-6. Ejecutar el servidor
+## ▶️ Ejecutar el servidor
+```bash
 python run.py
+py run.py #Tambien funciona
+```
 
+La aplicación estará disponible en:
+- 👉 http://127.0.0.1:5000
 
-La aplicación correrá en:
-👉 http://127.0.0.1:5000
+---
 
-📡 Endpoints principales
-Autenticación
+## 📡 Endpoints principales
 
-POST /auth/register → Registro de usuario
+### 🔐 Autenticación
+| Método | Endpoint         | Descripción                               |
+|--------|------------------|-------------------------------------------|
+| POST   | `/auth/register` | Registro de usuario                       |
+| POST   | `/auth/login`    | Inicio de sesión y generación de token    |
+| GET    | `/auth/logout`   | Cierre de sesión *(pendiente revocación)* |
 
-POST /auth/login → Inicio de sesión y generación de token JWT
+---
 
-GET /auth/logout → Cierre de sesión (revocación de token - pendiente de implementación)
+## 🔑 Seguridad con JWT
 
-🔑 Seguridad con JWT
-
-El login devuelve un token JWT.
-
+El login devuelve un **token JWT**.  
 Ese token debe enviarse en el header de cada petición protegida:
 
+```http
 Authorization: Bearer <tu_token>
+```
 
-📂 Estructura del proyecto
+---
+
+## 📂 Estructura del proyecto
+```bash
 BackendFlask/
 │── app/
-│   ├── __init__.py         # Inicialización de la aplicación Flask
-│   ├── extensions.py       # Inicialización de extensiones (db, migrate, jwt)
-│   ├── models/             # Modelos de la base de datos
-│   ├── routes/             # Blueprints (ej: auth)
-│   └── services/           # Servicios de lógica (ej: auth_service)
-│── migrations/             # Migraciones de Alembic
-│── config.py               # Configuración de entornos
-│── run.py                  # Punto de entrada de la aplicación
-│── requirements.txt        # Dependencias del proyecto
-│── .env                    # Variables de entorno (ignorado en git)
+│   ├── __init__.py        # Inicialización de la app Flask
+│   ├── extensions.py      # Extensiones (db, migrate, jwt)
+│   ├── models/            # Modelos de la BD
+│   ├── routes/            # Blueprints (ej: auth)
+│   └── services/          # Lógica de negocio (ej: auth_service)
+│── migrations/            # Migraciones Alembic
+│── config.py              # Configuración de entornos
+│── run.py                 # Punto de entrada de la aplicación
+│── requirements.txt       # Dependencias del proyecto
+│── .env                   # Variables de entorno (ignorado en git)
+```
+---
 
-✅ Recomendaciones adicionales
+## ✅ Recomendaciones
 
-Usa Postman o Insomnia para probar los endpoints.
+- **Usa Postman o Insomnia para probar endpoints.**
 
-No subas nunca tu .env al repositorio.
-
-En producción, asegúrate de:
-
-Usar un JWT_SECRET_KEY robusto.
-
-Configurar HTTPS para proteger los tokens.
-
-Desactivar DEBUG = True.
+- **Nunca subas tu .env al repositorio.**

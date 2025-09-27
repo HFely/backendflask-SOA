@@ -3,7 +3,7 @@ import jwt
 from functools import wraps
 from flask import request, jsonify, current_app
 from app.extensions import blacklist
-from app.models.user import User
+from app.models.usuario import Usuario
 
 def token_required(f):
     @wraps(f)
@@ -21,7 +21,7 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = User.query.get(data['user_id'])
+            current_user = Usuario.query.get(data['id_user'])
         except Exception as e:
             return jsonify({'message': 'Token inválido', 'error': str(e)}), 401
 

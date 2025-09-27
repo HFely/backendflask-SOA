@@ -2,7 +2,7 @@
 from functools import wraps
 from flask import request, jsonify
 from app.services.auth_service import decode_token
-from app.models.user import User
+from app.models.usuario import Usuario
 from app.extensions import blacklist
 
 def jwt_required(f):
@@ -22,7 +22,7 @@ def jwt_required(f):
         if "error" in data:
             return jsonify({"message": data["error"]}), 401
 
-        current_user = User.query.get(data["user_id"])
+        current_user = Usuario.query.get(data["id_user"])
         if not current_user:
             return jsonify({"message": "Usuario no encontrado"}), 404
 
