@@ -20,3 +20,18 @@ class EntidadRelacion(db.Model):
     
     def __repr__(self):
         return f'<EntidadRelacion {self.nombre_entidad}>'
+    
+    def to_dict(self):
+        return {
+            'id_entidad': self.id_entidad,
+            'nombre_entidad': self.nombre_entidad,
+            'id_tipo_doc_ident': self.id_tipo_doc_ident,
+            'nro_doc_ident': self.nro_doc_ident,
+            'direccion': self.direccion,
+            'telefono': self.telefono,
+            'flag_proveedor': self.flag_proveedor,
+            'flag_cliente': self.flag_cliente,
+            'flag_estado': self.flag_estado,
+            # Información de relaciones (opcional pero muy útil)
+            'tipo_documento_nombre': self.tipo_documento.nombre_tipo_doc_ident if self.tipo_documento else None
+        }

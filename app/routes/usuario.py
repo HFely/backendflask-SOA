@@ -10,7 +10,7 @@ usuario_bp = Blueprint('usuario', __name__)
 # Obtener todos los usuarios (solo para administradores)
 @usuario_bp.route('/usuarios', methods=['GET'])
 @token_required
-def get_usuarios(current_user):
+def ConsultarUsuarios(current_user):
     if current_user.flag_administrador != '1':
         return jsonify({"message": "Acceso denegado"}), 403
 
@@ -22,7 +22,7 @@ def get_usuarios(current_user):
 # Obtener un usuario por ID
 @usuario_bp.route('/usuarios/<int:id_user>', methods=['GET'])
 @token_required
-def get_usuario(current_user, id_user):
+def ConsultarUsuarioID(current_user, id_user):
     if current_user.flag_administrador != '1' and current_user.id_user != id_user:
         return jsonify({"message": "Acceso denegado"}), 403
 
@@ -32,10 +32,59 @@ def get_usuario(current_user, id_user):
 
     return jsonify(user.to_dict()), 200
 
+# Crear un nuevo usuario (solo para administradores)
+@usuario_bp.route('/usuarios', methods=['POST'])
+@token_required
+def CrearUsuario(current_user):
+    if current_user.flag_administrador != '1':
+        return jsonify({"message": "Acceso denegado"}), 403
+
+    data = request.get_json()
+    login_user = data.get("login_user")
+    nro_doc_ident = data.get("nro_doc_ident")
+    nombre_user = data.get("nombre_user")
+    password = data.get("password")
+    
+    # Campos opcionales
+    direccion_user = data.get("direccion_user", "")
+    telefono_user = data.get("telefono_user", "")
+    id_tipo_doc_ident = data.get("id_tipo_doc_ident", 1)  # Valor por defecto
+    flag_administrador = data.get("flag_administrador", '0')
+    flag_inventarios = data.get("flag_inventarios", '0')
+    flag_estado = data.get("flag_estado", '1')
+
+    # Validaciones
+    if not all([login_user, nro_doc_ident, nombre_user, password, id_tipo_doc_ident]):
+        return jsonify({"message": "Faltan campos obligatorios"}), 400
+
+    if Usuario.query.filter_by(login_user=login_user).first():
+        return jsonify({"message": "El usuario ya existe"}), 400
+
+    # Verificar que no exista otro usuario con el mismo nro_doc_ident y tipo
+    if Usuario.query.filter_by(id_tipo_doc_ident=id_tipo_doc_ident, nro_doc_ident=nro_doc_ident).first():
+        return jsonify({"message": "Ya existe un usuario con este documento"}), 400
+
+    user = Usuario(
+        login_user=login_user,
+        id_tipo_doc_ident=id_tipo_doc_ident,
+        nro_doc_ident=nro_doc_ident,
+        nombre_user=nombre_user,
+        direccion_user=direccion_user,
+        telefono_user=telefono_user,
+        flag_administrador=flag_administrador,
+        flag_inventarios=flag_inventarios,
+        flag_estado=flag_estado
+    )
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({"message": "Usuario creado exitosamente"}), 201
+
 # Actualizar un usuario
 @usuario_bp.route('/usuarios/<int:id_user>', methods=['PUT'])
 @token_required
-def update_usuario(current_user, id_user):
+def ModificarUsuario(current_user, id_user):
     if current_user.flag_administrador != '1' and current_user.id_user != id_user:
         return jsonify({"message": "Acceso denegado"}), 403
 
@@ -62,7 +111,7 @@ def update_usuario(current_user, id_user):
 # Inactivar un usuario
 @usuario_bp.route('/usuarios/<int:id_user>', methods=['DELETE'])
 @token_required
-def delete_usuario(current_user, id_user):
+def InactivarUsuario(current_user, id_user):
     if current_user.flag_administrador != '1':
         return jsonify({"message": "Acceso denegado"}), 403
 
@@ -73,3 +122,4 @@ def delete_usuario(current_user, id_user):
     user.flag_estado = '0'  # Inactivar el usuario
     db.session.commit()
     return jsonify({"message": "Usuario inactivado exitosamente"}), 200
+

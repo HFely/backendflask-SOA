@@ -18,3 +18,15 @@ class ValeAlmacenDet(db.Model):
     
     def __repr__(self):
         return f'<ValeAlmacenDet {self.id_vale_almacen_det}>'
+    
+    def to_dict(self):
+        return {
+            'id_vale_almacen_det': self.id_vale_almacen_det,
+            'id_vale_almacen': self.id_vale_almacen,
+            'item': float(self.item) if self.item else None,
+            'id_articulo': self.id_articulo,
+            'cantidad': float(self.cantidad) if self.cantidad else 0,
+            'precio_soles': float(self.precio_soles) if self.precio_soles else 0,
+            'flag_estado': self.flag_estado,
+            'articulo_nombre': self.articulo.nombre_articulo if self.articulo else None
+        }
