@@ -17,7 +17,15 @@ def register_blueprints(app):
     app.register_blueprint(vale_almacen_bp, url_prefix='/vales_almacen')
 
 # Registrar namespaces de la API
-from app.routes.auth import auth_ns
+from app.routes.auth_docs import auth_ns
+from app.routes.articulo_docs import articulo_ns
+from app.routes.entidad_relacion_docs import entidad_relacion_ns
+from app.routes.vale_almacen_docs import vale_almacen_ns
+from app.routes.usuario_docs import usuario_ns
 
 def register_api_namespaces(api):
     api.add_namespace(auth_ns)
+    api.add_namespace(articulo_ns)
+    api.add_namespace(entidad_relacion_ns)
+    api.add_namespace(vale_almacen_ns)
+    api.add_namespace(usuario_ns)
