@@ -8,11 +8,11 @@ from app.decorators.PyJWT import token_required
 usuario_bp = Blueprint('usuario', __name__)
 
 # Obtener todos los usuarios (solo para administradores)
-@usuario_bp.route('/usuarios', methods=['GET'])
+@usuario_bp.route('/', methods=['GET'])
 @token_required
 def ConsultarUsuarios(current_user):
-    if current_user.flag_administrador != '1':
-        return jsonify({"message": "Acceso denegado"}), 403
+    # if current_user.flag_administrador != '1':
+    #     return jsonify({"message": "Acceso denegado"}), 403
 
     usuarios = Usuario.query.all()
     output = [user.to_dict() for user in usuarios]
@@ -20,7 +20,7 @@ def ConsultarUsuarios(current_user):
     return jsonify({'usuarios': output}), 200
 
 # Obtener un usuario por ID
-@usuario_bp.route('/usuarios/<int:id_user>', methods=['GET'])
+@usuario_bp.route('/<int:id_user>', methods=['GET'])
 @token_required
 def ConsultarUsuarioID(current_user, id_user):
     if current_user.flag_administrador != '1' and current_user.id_user != id_user:
@@ -33,7 +33,7 @@ def ConsultarUsuarioID(current_user, id_user):
     return jsonify(user.to_dict()), 200
 
 # Crear un nuevo usuario (solo para administradores)
-@usuario_bp.route('/usuarios', methods=['POST'])
+@usuario_bp.route('/', methods=['POST'])
 @token_required
 def CrearUsuario(current_user):
     if current_user.flag_administrador != '1':
@@ -82,7 +82,7 @@ def CrearUsuario(current_user):
     return jsonify({"message": "Usuario creado exitosamente"}), 201
 
 # Actualizar un usuario
-@usuario_bp.route('/usuarios/<int:id_user>', methods=['PUT'])
+@usuario_bp.route('/<int:id_user>', methods=['PUT'])
 @token_required
 def ModificarUsuario(current_user, id_user):
     if current_user.flag_administrador != '1' and current_user.id_user != id_user:
@@ -109,7 +109,7 @@ def ModificarUsuario(current_user, id_user):
     return jsonify({"message": "Usuario actualizado exitosamente"}), 200
 
 # Inactivar un usuario
-@usuario_bp.route('/usuarios/<int:id_user>', methods=['DELETE'])
+@usuario_bp.route('/<int:id_user>', methods=['DELETE'])
 @token_required
 def InactivarUsuario(current_user, id_user):
     if current_user.flag_administrador != '1':

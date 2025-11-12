@@ -11,7 +11,7 @@ from datetime import datetime
 vale_almacen_bp = Blueprint('vale_almacen', __name__)
 
 # Obtener todos los vales de almacén
-@vale_almacen_bp.route('/vales_almacen', methods=['GET'])
+@vale_almacen_bp.route('/', methods=['GET'])
 @token_required
 def ConsultarValesAlmacen(current_user):
     vales = ValeAlmacen.query.all()
@@ -20,7 +20,7 @@ def ConsultarValesAlmacen(current_user):
     return jsonify({'vales_almacen': output}), 200
 
 # Obtener un vale de almacén por ID
-@vale_almacen_bp.route('/vales_almacen/<int:id_vale>', methods=['GET'])
+@vale_almacen_bp.route('//<int:id_vale>', methods=['GET'])
 @token_required
 def ConsultarValeAlmacenID(current_user, id_vale):
     vale = ValeAlmacen.query.get(id_vale)
@@ -30,7 +30,7 @@ def ConsultarValeAlmacenID(current_user, id_vale):
     return jsonify(vale.to_dict()), 200
 
 # Consultar vales por tipo movimiento de almacen y fecha inicio y fin
-@vale_almacen_bp.route('/vales_almacen/tipo_mov/<int:id_tipo_mov>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
+@vale_almacen_bp.route('/tipo_mov/<int:id_tipo_mov>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
 @token_required
 def ConsultarValesTipoMovFecha(current_user, id_tipo_mov, fecha_inicio, fecha_fin):
     try:
@@ -48,7 +48,7 @@ def ConsultarValesTipoMovFecha(current_user, id_tipo_mov, fecha_inicio, fecha_fi
     return jsonify({'vales_almacen': output}), 200
 
 # Consultar vales por tipo movimiento de documento, numero de documento y fecha inicio y fin
-@vale_almacen_bp.route('/vales_almacen/tipo_doc/<int:id_tipo_doc>/nro_doc/<string:nro_doc>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
+@vale_almacen_bp.route('/tipo_doc/<int:id_tipo_doc>/nro_doc/<string:nro_doc>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
 @token_required
 def ConsultarValesTipoDocNroDocFecha(current_user, id_tipo_doc, nro_doc, fecha_inicio, fecha_fin):
     try:
@@ -67,7 +67,7 @@ def ConsultarValesTipoDocNroDocFecha(current_user, id_tipo_doc, nro_doc, fecha_i
     return jsonify({'vales_almacen': output}), 200
 
 # Buscar vales por usuario y fecha inicio y fin
-@vale_almacen_bp.route('/vales_almacen/usuario/<string:usuario>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
+@vale_almacen_bp.route('/usuario/<string:usuario>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
 @token_required
 def BuscarValesUsuarioFecha(current_user, usuario, fecha_inicio, fecha_fin):
     try:
@@ -86,7 +86,7 @@ def BuscarValesUsuarioFecha(current_user, usuario, fecha_inicio, fecha_fin):
     return jsonify({'vales_almacen': output}), 200
 
 # Buscar vales por entidad y fecha inicio y fin
-@vale_almacen_bp.route('/vales_almacen/entidad/<string:entidad>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
+@vale_almacen_bp.route('/entidad/<string:entidad>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
 @token_required
 def BuscarValesEntidadFecha(current_user, entidad, fecha_inicio, fecha_fin):
     try:
@@ -104,7 +104,7 @@ def BuscarValesEntidadFecha(current_user, entidad, fecha_inicio, fecha_fin):
     return jsonify({'vales_almacen': output}), 200
 
 # Buscar vales por almacen y fecha inicio y fin
-@vale_almacen_bp.route('/vales_almacen/almacen/<string:almacen>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
+@vale_almacen_bp.route('/almacen/<string:almacen>/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
 @token_required
 def BuscarValesAlmacenFecha(current_user, almacen, fecha_inicio, fecha_fin):
     try:
@@ -122,7 +122,7 @@ def BuscarValesAlmacenFecha(current_user, almacen, fecha_inicio, fecha_fin):
     return jsonify({'vales_almacen': output}), 200
 
 # Mostrar detalles de un vale de almacén por ID del vale
-@vale_almacen_bp.route('/vales_almacen/<int:id_vale>/detalles', methods=['GET'])
+@vale_almacen_bp.route('/<int:id_vale>/detalles', methods=['GET'])
 @token_required
 def MostrarDetallesValeAlmacen(current_user, id_vale):
     vale = ValeAlmacen.query.get(id_vale)
@@ -134,7 +134,7 @@ def MostrarDetallesValeAlmacen(current_user, id_vale):
     return jsonify({'detalles': detalles}), 200
 
 #Consultar vales por rango de fechas
-@vale_almacen_bp.route('/vales_almacen/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
+@vale_almacen_bp.route('/fecha_inicio/<string:fecha_inicio>/fecha_fin/<string:fecha_fin>', methods=['GET'])
 @token_required
 def ConsultarValesRangoFechas(current_user, fecha_inicio, fecha_fin):
     try:
@@ -151,7 +151,7 @@ def ConsultarValesRangoFechas(current_user, fecha_inicio, fecha_fin):
     return jsonify({'vales_almacen': output}), 200
 
 # Ingresar vale de almacén
-@vale_almacen_bp.route('/vales_almacen', methods=['POST'])
+@vale_almacen_bp.route('/', methods=['POST'])
 @token_required
 def IngresarValeAlmacen(current_user):
     data = request.get_json()
@@ -183,7 +183,7 @@ def IngresarValeAlmacen(current_user):
     return jsonify({"message": "Vale de almacén creado exitosamente", "id_vale_almacen": nuevo_vale.id_vale_almacen}), 201
 
 # Ingresar detalles del vale de almacén
-@vale_almacen_bp.route('/vales_almacen/<int:id_vale>/detalles', methods=['POST'])
+@vale_almacen_bp.route('/<int:id_vale>/detalles', methods=['POST'])
 @token_required
 def IngresarDetallesValeAlmacen(current_user, id_vale):
     vale = ValeAlmacen.query.get(id_vale)
@@ -212,7 +212,7 @@ def IngresarDetallesValeAlmacen(current_user, id_vale):
     return jsonify({"message": "Detalles agregados exitosamente al vale de almacén"}), 201
 
 # Modificar vale de almacen
-@vale_almacen_bp.route('/vales_almacen/<int:id_vale>', methods=['PUT'])
+@vale_almacen_bp.route('/<int:id_vale>', methods=['PUT'])
 @token_required
 def ModificarValeAlmacen(current_user, id_vale):
     vale = ValeAlmacen.query.get(id_vale)
@@ -240,7 +240,7 @@ def ModificarValeAlmacen(current_user, id_vale):
     return jsonify({"message": "Vale de almacén modificado exitosamente"}), 200
 
 # Inactivar vale de almacen y su detalles
-@vale_almacen_bp.route('/vales_almacen/<int:id_vale>', methods=['DELETE'])
+@vale_almacen_bp.route('/<int:id_vale>', methods=['DELETE'])
 @token_required
 def InactivarValeAlmacen(current_user, id_vale):
     vale = ValeAlmacen.query.get(id_vale)

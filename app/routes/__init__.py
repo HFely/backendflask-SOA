@@ -23,9 +23,23 @@ from app.routes.entidad_relacion_docs import entidad_relacion_ns
 from app.routes.vale_almacen_docs import vale_almacen_ns
 from app.routes.usuario_docs import usuario_ns
 
+# def register_api_namespaces(api):
+#     api.add_namespace(auth_ns)
+#     api.add_namespace(articulo_ns)
+#     api.add_namespace(entidad_relacion_ns)
+#     api.add_namespace(vale_almacen_ns)
+#     api.add_namespace(usuario_ns)
+
 def register_api_namespaces(api):
-    api.add_namespace(auth_ns)
-    api.add_namespace(articulo_ns)
-    api.add_namespace(entidad_relacion_ns)
-    api.add_namespace(vale_almacen_ns)
-    api.add_namespace(usuario_ns)
+    namespaces = [
+        auth_ns,
+        articulo_ns,
+        entidad_relacion_ns,
+        vale_almacen_ns,
+        usuario_ns
+    ]
+
+    for ns in namespaces:
+        ns.authorizations = api.authorizations
+        ns.security = api.security
+        api.add_namespace(ns)

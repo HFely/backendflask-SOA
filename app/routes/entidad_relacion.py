@@ -8,7 +8,7 @@ from app.decorators.PyJWT import token_required
 entidad_relacion_bp = Blueprint('entidad_relacion', __name__)
 
 # Obtener todas las entidades_relaciones
-@entidad_relacion_bp.route('/entidades_relaciones', methods=['GET'])
+@entidad_relacion_bp.route('/', methods=['GET'])
 @token_required
 def ConsultarEntidadesRelaciones(current_user):
     entidades = EntidadRelacion.query.all()
@@ -17,7 +17,7 @@ def ConsultarEntidadesRelaciones(current_user):
     return jsonify({'entidades_relaciones': output}), 200
 
 # Obtener una entidad_relacion por ID
-@entidad_relacion_bp.route('/entidades_relaciones/<int:id_entidad>', methods=['GET'])
+@entidad_relacion_bp.route('/<int:id_entidad>', methods=['GET'])
 @token_required
 def ConsultarEntidadRelacionID(current_user, id_entidad):
     entidad = EntidadRelacion.query.get(id_entidad)
@@ -27,7 +27,7 @@ def ConsultarEntidadRelacionID(current_user, id_entidad):
     return jsonify(entidad.to_dict()), 200
 
 # Consultar entidades_relaciones por tipo de documento de identidad
-@entidad_relacion_bp.route('/entidades_relaciones/tipo_doc/<int:id_tipo_doc>', methods=['GET'])
+@entidad_relacion_bp.route('/tipo_doc/<int:id_tipo_doc>', methods=['GET'])
 @token_required
 def ConsultarEntidadesRelacionesTipoDoc(current_user, id_tipo_doc):
     entidades = EntidadRelacion.query.filter_by(id_tipo_doc_ident=id_tipo_doc).all()
@@ -36,7 +36,7 @@ def ConsultarEntidadesRelacionesTipoDoc(current_user, id_tipo_doc):
     return jsonify({'entidades_relaciones': output}), 200
 
 #Consultar entidades_relaciones por numero de documento de identidad y tipo de documento de identidad
-@entidad_relacion_bp.route('/entidades_relaciones/doc/<string:nro_doc_ident>/tipo_doc/<int:id_tipo_doc>', methods=['GET'])
+@entidad_relacion_bp.route('/doc/<string:nro_doc_ident>/tipo_doc/<int:id_tipo_doc>', methods=['GET'])
 @token_required
 def ConsultarEntidadesRelacionesNroDocTipoDoc(current_user, nro_doc_ident, id_tipo_doc):
     entidades = EntidadRelacion.query.filter_by(nro_doc_ident=nro_doc_ident, id_tipo_doc_ident=id_tipo_doc).all()
@@ -45,7 +45,7 @@ def ConsultarEntidadesRelacionesNroDocTipoDoc(current_user, nro_doc_ident, id_ti
     return jsonify({'entidades_relaciones': output}), 200
 
 #Buscar entidades_relaciones por nombre (búsqueda parcial)
-@entidad_relacion_bp.route('/entidades_relaciones/buscar/<string:nombre>', methods=['GET'])
+@entidad_relacion_bp.route('/buscar/<string:nombre>', methods=['GET'])
 @token_required
 def BuscarEntidadesRelacionesNombre(current_user, nombre):
     entidades = EntidadRelacion.query.filter(EntidadRelacion.nombre_entidad.ilike(f'%{nombre}%')).all()
@@ -54,7 +54,7 @@ def BuscarEntidadesRelacionesNombre(current_user, nombre):
     return jsonify({'entidades_relaciones': output}), 200
 
 #Filtrar entidades_relaciones por proveedores
-@entidad_relacion_bp.route('/entidades_relaciones/proveedores', methods=['GET'])
+@entidad_relacion_bp.route('/proveedores', methods=['GET'])
 @token_required
 def FiltrarEntidadesRelacionesProveedores(current_user):
     entidades = EntidadRelacion.query.filter_by(flag_proveedor='1').all()
@@ -63,7 +63,7 @@ def FiltrarEntidadesRelacionesProveedores(current_user):
     return jsonify({'entidades_relaciones': output}), 200
 
 #Filtrar entidades_relaciones por clientes
-@entidad_relacion_bp.route('/entidades_relaciones/clientes', methods=['GET'])
+@entidad_relacion_bp.route('/clientes', methods=['GET'])
 @token_required
 def FiltrarEntidadesRelacionesClientes(current_user):
     entidades = EntidadRelacion.query.filter_by(flag_cliente='1').all()
@@ -72,7 +72,7 @@ def FiltrarEntidadesRelacionesClientes(current_user):
     return jsonify({'entidades_relaciones': output}), 200
 
 # Crear una nueva entidad_relacion (solo para administradores)
-@entidad_relacion_bp.route('/entidades_relaciones', methods=['POST'])
+@entidad_relacion_bp.route('/', methods=['POST'])
 @token_required
 def CrearEntidadRelacion(current_user):
     if current_user.flag_administrador != '1':
@@ -124,7 +124,7 @@ def CrearEntidadRelacion(current_user):
     return jsonify({"message": "Entidad de relación creada exitosamente"}), 201
 
 # Actualizar una entidad_relacion (solo para administradores)
-@entidad_relacion_bp.route('/entidades_relaciones/<int:id_entidad>', methods=['PUT'])
+@entidad_relacion_bp.route('/<int:id_entidad>', methods=['PUT'])
 @token_required
 def ActualizarEntidadRelacion(current_user, id_entidad):
     if current_user.flag_administrador != '1':
@@ -170,7 +170,7 @@ def ActualizarEntidadRelacion(current_user, id_entidad):
     return jsonify({"message": "Entidad de relación actualizada exitosamente"}), 200
 
 # Inactivar una entidad_relacion (solo para administradores)
-@entidad_relacion_bp.route('/entidades_relaciones/<int:id_entidad>', methods=['DELETE'])
+@entidad_relacion_bp.route('/<int:id_entidad>', methods=['DELETE'])
 @token_required
 def InactivarEntidadRelacion(current_user, id_entidad):
     if current_user.flag_administrador != '1':
