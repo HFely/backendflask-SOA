@@ -34,25 +34,43 @@ def CrearArticulo(current_user):
         return jsonify({"message": "Acceso denegado"}), 403
 
     data = request.get_json()
-    nombre_articulo = data.get("nombre_articulo")
-    descripcion_articulo = data.get("descripcion_articulo", "")
-    precio_articulo = data.get("precio_articulo", 0.0)
-    stock_articulo = data.get("stock_articulo", 0)
+    # ✅ Validar campos obligatorios
+    campos_requeridos = ['nombre_articulo', 'cod_articulo', 'cod_unidad', 'id_categoria']
+    for campo in campos_requeridos:
+        if not data.get(campo):
+            return jsonify({"message": f"Falta el campo: {campo}"}), 400
 
-    # Validaciones
-    if not nombre_articulo:
-        return jsonify({"message": "Falta el nombre del artículo"}), 400
+    # ✅ Validar relaciones existan
+    from app.models.unidad import Unidad
+    from app.models.categoria import Categoria
+    
+    if not Unidad.query.get(data['cod_unidad']):
+        return jsonify({"message": "Unidad de medida no existe"}), 400
+        
+    if not Categoria.query.get(data['id_categoria']):
+        return jsonify({"message": "Categoría no existe"}), 400
+
+    # ✅ Validar código único
+    if Articulo.query.filter_by(cod_articulo=data['cod_articulo']).first():
+        return jsonify({"message": "Ya existe un artículo con este código"}), 400
 
     articulo = Articulo(
-        nombre_articulo=nombre_articulo,
-        descripcion_articulo=descripcion_articulo,
-        precio_articulo=precio_articulo,
-        stock_articulo=stock_articulo
+        cod_articulo=data['cod_articulo'],
+        nombre_articulo=data['nombre_articulo'],
+        descripcion_articulo=data.get('descripcion_articulo', ''),
+        precio_articulo=data.get('precio_articulo', 0.0),
+        stock_articulo=data.get('stock_articulo', 0),
+        cod_unidad=data['cod_unidad'],
+        id_categoria=data['id_categoria']
     )
+    
     db.session.add(articulo)
     db.session.commit()
 
-    return jsonify({"message": "Artículo creado exitosamente"}), 201
+    return jsonify({
+        "message": "Artículo creado exitosamente",
+        "id_articulo": articulo.id_articulo
+    }), 201
 
 # Actualizar un artículo (solo para administradores)
 @articulo_bp.route('/<int:id_articulo>', methods=['PUT'])

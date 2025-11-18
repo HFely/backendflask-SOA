@@ -5,6 +5,7 @@ from config import config
 from .extensions import db, migrate, jwt
 from app.routes import register_blueprints, register_api_namespaces
 from flask_restx import Api
+from flask_cors import CORS
 
 def create_app(config_name="default"):
     app = Flask(__name__)
@@ -14,6 +15,8 @@ def create_app(config_name="default"):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     # Configurar Swagger/OpenAPI
     api = Api(

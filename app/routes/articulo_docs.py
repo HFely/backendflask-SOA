@@ -2,34 +2,42 @@
 from flask import request
 from flask_restx import Resource, fields, Namespace, reqparse
 from app.models.articulo import Articulo
+from app.models.unidad import Unidad
+from app.models.categoria import Categoria
+from app.models.usuario import Usuario
 from app.extensions import db
 from app.decorators.PyJWT import token_required
+from app.services.auth_service import decode_token
 
 # Crear namespace para Swagger
 articulo_ns = Namespace('articulos', description='Operaciones de gestión de artículos')
 
-# Modelos para la documentación Swagger
+# Modelos para la documentación Swagger - CORREGIDOS
 articulo_model = articulo_ns.model('Articulo', {
     'id_articulo': fields.Integer(readOnly=True, description='ID único del artículo'),
+    'cod_articulo': fields.String(required=True, description='Código único del artículo (12 caracteres)'),
     'nombre_articulo': fields.String(required=True, description='Nombre del artículo'),
     'descripcion_articulo': fields.String(description='Descripción del artículo'),
     'precio_articulo': fields.Float(required=True, description='Precio del artículo'),
     'stock_articulo': fields.Integer(required=True, description='Stock disponible'),
-    'cod_unidad': fields.String(description='Código de unidad de medida'),
-    'id_categoria': fields.Integer(description='ID de la categoría'),
+    'cod_unidad': fields.String(required=True, description='Código de unidad de medida'),
+    'id_categoria': fields.Integer(required=True, description='ID de la categoría'),
     'flag_estado': fields.String(description='Estado del artículo (1:Activo, 0:Inactivo)')
 })
 
+# ✅ CORREGIDO: Incluir cod_articulo que es campo obligatorio
 articulo_create_model = articulo_ns.model('CrearArticulo', {
+    'cod_articulo': fields.String(required=True, description='Código único del artículo (12 caracteres)'),
     'nombre_articulo': fields.String(required=True, description='Nombre del artículo'),
     'descripcion_articulo': fields.String(description='Descripción del artículo'),
     'precio_articulo': fields.Float(required=True, description='Precio del artículo'),
     'stock_articulo': fields.Integer(required=True, description='Stock disponible'),
-    'cod_unidad': fields.String(description='Código de unidad de medida'),
-    'id_categoria': fields.Integer(description='ID de la categoría')
+    'cod_unidad': fields.String(required=True, description='Código de unidad de medida'),
+    'id_categoria': fields.Integer(required=True, description='ID de la categoría')
 })
 
 articulo_update_model = articulo_ns.model('ActualizarArticulo', {
+    'cod_articulo': fields.String(description='Código único del artículo'),
     'nombre_articulo': fields.String(description='Nombre del artículo'),
     'descripcion_articulo': fields.String(description='Descripción del artículo'),
     'precio_articulo': fields.Float(description='Precio del artículo'),
@@ -40,6 +48,7 @@ articulo_update_model = articulo_ns.model('ActualizarArticulo', {
 
 articulo_response_model = articulo_ns.model('ArticuloResponse', {
     'id_articulo': fields.Integer(description='ID único del artículo'),
+    'cod_articulo': fields.String(description='Código único del artículo'),
     'nombre_articulo': fields.String(description='Nombre del artículo'),
     'descripcion_articulo': fields.String(description='Descripción del artículo'),
     'precio_articulo': fields.Float(description='Precio del artículo'),
@@ -63,7 +72,7 @@ unidad_parser.add_argument('Authorization', location='headers', required=True, h
 auth_parser = reqparse.RequestParser()
 auth_parser.add_argument('Authorization', location='headers', required=True, help='Token Bearer')
 
-# Endpoints con Swagger Documentation
+# Endpoints con Swagger Documentation - CORREGIDOS
 @articulo_ns.route('/')
 class ArticuloList(Resource):
     @articulo_ns.expect(auth_parser)
@@ -76,7 +85,6 @@ class ArticuloList(Resource):
         token = args['Authorization'].split(" ")[1]
         
         # Verificar token usando el decorator
-        from app.services.auth_service import decode_token
         token_data = decode_token(token)
         if "error" in token_data:
             return {"message": token_data["error"]}, 401
@@ -96,26 +104,43 @@ class ArticuloList(Resource):
         data = request.get_json()
         
         # Verificar token y permisos
-        from app.services.auth_service import decode_token
         token_data = decode_token(token)
         if "error" in token_data:
             return {"message": token_data["error"]}, 401
             
-        from app.models.usuario import Usuario
         current_user = Usuario.query.get(token_data["user_id"])
         if not current_user or current_user.flag_administrador != '1':
             return {"message": "Acceso denegado - Se requiere rol administrador"}, 403
 
-        nombre_articulo = data.get("nombre_articulo")
-        descripcion_articulo = data.get("descripcion_articulo", "")
-        precio_articulo = data.get("precio_articulo", 0.0)
-        stock_articulo = data.get("stock_articulo", 0)
-        cod_unidad = data.get("cod_unidad", "")
-        id_categoria = data.get("id_categoria")
+        # ✅ VALIDACIONES COMPLETAS Y CORRECTAS
+        # 1. Validar campos requeridos
+        campos_requeridos = ['cod_articulo', 'nombre_articulo', 'cod_unidad', 'id_categoria']
+        for campo in campos_requeridos:
+            if not data.get(campo):
+                return {"message": f"Falta el campo requerido: {campo}"}, 400
 
-        # Validaciones
-        if not nombre_articulo:
-            return {"message": "Falta el nombre del artículo"}, 400
+        # 2. Validar formato del código (12 caracteres máximo)
+        cod_articulo = data.get('cod_articulo', '').strip()
+        if len(cod_articulo) > 12:
+            return {"message": "El código del artículo no puede exceder 12 caracteres"}, 400
+
+        # 3. Validar que el código sea único
+        if Articulo.query.filter_by(cod_articulo=cod_articulo).first():
+            return {"message": "Ya existe un artículo con este código"}, 400
+
+        # 4. Validar que la unidad exista
+        cod_unidad = data.get('cod_unidad')
+        if not Unidad.query.get(cod_unidad):
+            return {"message": "La unidad de medida no existe"}, 400
+
+        # 5. Validar que la categoría exista
+        id_categoria = data.get('id_categoria')
+        if not Categoria.query.get(id_categoria):
+            return {"message": "La categoría no existe"}, 400
+
+        # 6. Validar valores numéricos
+        precio_articulo = data.get('precio_articulo', 0.0)
+        stock_articulo = data.get('stock_articulo', 0)
 
         if precio_articulo < 0:
             return {"message": "El precio no puede ser negativo"}, 400
@@ -123,22 +148,30 @@ class ArticuloList(Resource):
         if stock_articulo < 0:
             return {"message": "El stock no puede ser negativo"}, 400
 
-        # Verificar si ya existe un artículo con el mismo nombre
-        if Articulo.query.filter_by(nombre_articulo=nombre_articulo).first():
-            return {"message": "Ya existe un artículo con este nombre"}, 400
+        # ✅ CREAR EL ARTÍCULO CON TODOS LOS CAMPOS REQUERIDOS
+        try:
+            articulo = Articulo(
+                cod_articulo=cod_articulo,
+                nombre_articulo=data.get('nombre_articulo'),
+                descripcion_articulo=data.get('descripcion_articulo', ''),
+                precio_articulo=precio_articulo,
+                stock_articulo=stock_articulo,
+                cod_unidad=cod_unidad,
+                id_categoria=id_categoria
+            )
+            
+            db.session.add(articulo)
+            db.session.commit()
 
-        articulo = Articulo(
-            nombre_articulo=nombre_articulo,
-            descripcion_articulo=descripcion_articulo,
-            precio_articulo=precio_articulo,
-            stock_articulo=stock_articulo,
-            cod_unidad=cod_unidad,
-            id_categoria=id_categoria
-        )
-        db.session.add(articulo)
-        db.session.commit()
+            return {
+                "message": "Artículo creado exitosamente", 
+                "id_articulo": articulo.id_articulo,
+                "cod_articulo": articulo.cod_articulo
+            }, 201
 
-        return {"message": "Artículo creado exitosamente", "id_articulo": articulo.id_articulo}, 201
+        except Exception as e:
+            db.session.rollback()
+            return {"message": f"Error al crear el artículo: {str(e)}"}, 500
 
 @articulo_ns.route('/<int:id_articulo>')
 class ArticuloDetail(Resource):
