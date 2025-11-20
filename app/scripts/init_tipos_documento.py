@@ -31,7 +31,7 @@ def init_tipos_documento():
         # ========== DOCUMENTOS DE VENTAS ==========
         {'id': 17, 'codigo': 'PV', 'nombre': 'PEDIDO DE VENTA'},
         {'id': 18, 'codigo': 'COTV', 'nombre': 'COTIZACIÓN DE VENTA'},
-        {'id': 19, 'codigo': 'PREVENT', 'nombre': 'PREVENTA'},
+        {'id': 19, 'codigo': 'PREVEN', 'nombre': 'PREVENTA'},
         {'id': 20, 'codigo': 'REMIS', 'nombre': 'REMISIÓN'},
         
         # ========== DOCUMENTOS DE CONTROL ==========

@@ -36,7 +36,7 @@ def init_categorias():
         {'id': 21, 'codigo': 'SEGURI', 'nombre': 'SEGURIDAD INDUSTRIAL'},
         {'id': 22, 'codigo': 'MANTEN', 'nombre': 'MANTENIMIENTO'},
         {'id': 23, 'codigo': 'PERECE', 'nombre': 'PRODUCTOS PERECIBLES'},
-        {'id': 24, 'codigo': 'NOPEREC', 'nombre': 'NO PERECIBLES'}
+        {'id': 24, 'codigo': 'NOPERE', 'nombre': 'NO PERECIBLES'}
     ]
     
     created_count = 0

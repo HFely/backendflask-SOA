@@ -109,8 +109,8 @@ class ArticuloList(Resource):
             return {"message": token_data["error"]}, 401
             
         current_user = Usuario.query.get(token_data["user_id"])
-        if not current_user or current_user.flag_administrador != '1':
-            return {"message": "Acceso denegado - Se requiere rol administrador"}, 403
+        # if not current_user or current_user.flag_administrador != '1':
+        #     return {"message": "Acceso denegado - Se requiere rol administrador"}, 403
 
         # ✅ VALIDACIONES COMPLETAS Y CORRECTAS
         # 1. Validar campos requeridos

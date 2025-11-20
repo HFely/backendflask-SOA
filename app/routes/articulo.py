@@ -30,8 +30,8 @@ def ConsultarArticuloID(current_user, id_articulo):
 @articulo_bp.route('/', methods=['POST'])
 @token_required
 def CrearArticulo(current_user):
-    if current_user.flag_administrador != '1':
-        return jsonify({"message": "Acceso denegado"}), 403
+    # if current_user.flag_administrador != '1':
+    #     return jsonify({"message": "Acceso denegado"}), 403
 
     data = request.get_json()
     # ✅ Validar campos obligatorios
